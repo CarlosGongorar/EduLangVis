@@ -32,11 +32,11 @@ class LexicalAnalyzer:
             ("MISMATCH",       r"."),
         ]
 
-        """ 
-        1. Compile a big regex that group all the posible classes of tokens
-        2. Travel source code with "finditer" extracting in each step token type and corresponding string
-        3. Finaly, filter the spaces and newlines, detect errors "MISMATCH" and colected all valid tokens in a array to return them to the SyntaxAnalyzer 
-        """
+
+        # Compile a big regex that group all the posible classes of tokens
+        # Travel source code with "finditer" extracting in each step token type and corresponding string
+        # Finaly, filter the spaces and newlines, detect errors "MISMATCH" and colected all valid tokens in a array to return them to the SyntaxAnalyzer 
+
         tok_regex = "|".join(f"(?P<{name}>{pattern})"
             for name, pattern in token_specification)
         tokens = []

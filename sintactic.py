@@ -21,6 +21,9 @@ class SyntacticAnalyzer:
         self.array = []
         self.algorithm = None
 
+    # Increment self.pos.
+    # If there are still tokens, update self.current to the next one.
+    # If there are none left, assign Token('EOF', None), which acts as a sentinel to detect when we reach the end and prevent index errors.
     def advance(self):
         self.pos += 1
         if self.pos < len(self.tokens):
@@ -28,6 +31,9 @@ class SyntacticAnalyzer:
         else:
             self.current = Token('EOF', None)
 
+    # eat(type_, value) verifies that the current token matches the type (type_) and, optionally, an exact value (value, for example, "ARRAY").
+    # If it doesn't match, it throws a ParserError, indicating where the syntax was not as expected.
+    # If it matches, it saves the token, advances, and returns it.
     def eat(self, type_, value=None):
         if self.current.type_ != type_ or (value is not None and self.current.value != value):
             esperado = f"{type_}{' '+value if value else ''}"
@@ -36,12 +42,21 @@ class SyntacticAnalyzer:
         self.advance()
         return tok
 
+    # It calls self.script(), which applies the main rule of the grammar.
+    # It then checks that after processing VISUALIZE, there are no more tokens EOF left, always should EOF
+    # It returns the parsed result (the array and the algorithm name).
     def parse(self):
         self.script()
         if self.current.type_ != 'EOF':
             raise ParserError(f"Tokens extra después de VISUALIZE: {self.current}")
         return {'array': self.array, 'algorithm': self.algorithm}
 
+
+    # Waits for the ARRAY keyword.
+    # Reads the array literal (delegating to array_literal()).
+    # Waits for ALGORITHM.
+    # Reads the algorithm name (ALGORITHM_NAME).
+    # Waits for VISUALIZE.
     def script(self):
         # ARRAY
         self.eat('KEYWORD', 'ARRAY')
@@ -49,18 +64,25 @@ class SyntacticAnalyzer:
         self.array = self.array_literal()
         # ALGORITHM
         self.eat('KEYWORD', 'ALGORITHM')
-        # Aquí cambiamos: en vez de eat('ID'), comemos ALGORITHM_NAME
+        # ALGORITHM_NAME
         alg_tok = self.eat('ALGORITHM_NAME')
         self.algorithm = alg_tok.value
         # VISUALIZE
         self.eat('KEYWORD', 'VISUALIZE')
 
+    # Consumes the left bracket ([).
+    # Calls number_list() to read the sequence of numbers (and commas).
+    # Consumes the right bracket (]).
+    # Returns the list of integers.
     def array_literal(self):
         self.eat('LBRACKET')
         nums = self.number_list()
         self.eat('RBRACKET')
         return nums
 
+    #It requires at least one NUMBER.
+    # Then, as long as it sees commas, it consumes COMMA and another NUMBER.
+    # It transforms each lexeme into an int and adds it to the list.
     def number_list(self):
         nums = []
         num_tok = self.eat('NUMBER')
@@ -76,7 +98,7 @@ if __name__ == "__main__":
     from lexical import LexicalAnalyzer
 
     code = """
-    ARRAY [6, 2, 9, 3]
+    ARRAY [6]
     ALGORITHM bubble_sort
     VISUALIZE
     """
