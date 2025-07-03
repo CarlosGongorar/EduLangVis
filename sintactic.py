@@ -7,16 +7,17 @@ Grammar:
 <NUMBER_LIST>   -> NUMBER ( COMMA NUMBER )*
 """
 
-from lexical import Token  # tu clase Token
+from lexical import Token
 
 class ParserError(Exception):
     pass
 
 class SyntacticAnalyzer:
     def __init__(self, tokens):
-        self.tokens = tokens
-        self.pos = 0
-        self.current = self.tokens[0] if self.tokens else Token('EOF', None)
+        self.tokens = tokens # Tokens list from LexicalAnalyzer
+        self.pos = 0 # Array index
+        self.current = self.tokens[0] if self.tokens else Token('EOF', None) # Current token that will be processed, if the array is empty we put a Token type EOF to indicate, end of data 
+        # Fields for parsing result
         self.array = []
         self.algorithm = None
 
