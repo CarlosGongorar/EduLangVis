@@ -2,7 +2,7 @@ import re
 
 # pylint: disable=too-few-public-methods
 class Token:
-    """This class represents the data structure of a token. It means: a type of token and its value (lexema)."""
+    """Un token con su tipo y su valor (lexema)."""
     def __init__(self, type_: str, value: str):
         self.type_ = type_
         self.value = value
@@ -16,33 +16,37 @@ class LexicalAnalyzer:
 
     @staticmethod
     def lex(code: str):
-        """This method receives a code(str) and returns a list of tokens."""
+        """Recibe el código y devuelve la lista de tokens."""
         token_specification = [
-            ("KEYWORDS", r"ARRAY|ALGORITHM|VISUALIZE"), # Keywords
-            ("ALGORITHMS", r"bubble_sort|merge_sort|quick_sort"),
-            ("LBRACKET",   r"\["),              # [
-            ("RBRACKET",   r"\]"),              # ]
-            ("COMMA",      r","),               # ,
-            ("NUMBER",     r"\d+"),             # Numbers
-            ("NEWLINE",    r"\n"),              # New lines
-            ("SKIP",       r"[ \t]+"),          # Idens and space
-            ("MISMATCH",   r"."),               # A wrong character
+            # 1) Algoritmos (patrón más largo, antes que KEYWORD)
+            ("ALGORITHM_NAME", r"\b(?:bubble_sort|merge_sort|quick_sort)\b"),
+            # 2) Palabras clave EDU
+            ("KEYWORD",        r"\b(?:ARRAY|ALGORITHM|VISUALIZE)\b"),
+            # 3) Delimitadores y separadores
+            ("LBRACKET",       r"\["),
+            ("RBRACKET",       r"\]"),
+            ("COMMA",          r","),
+            # 4) Número entero
+            ("NUMBER",         r"\d+"),
+            # 6) Saltos de línea y espacios (se ignoran)
+            ("NEWLINE",        r"\n"),
+            ("SKIP",           r"[ \t]+"),
+            # 7) Cualquier otro carácter → error
+            ("MISMATCH",       r"."),
         ]
 
-        tok_regex = "|".join(
-            f"(?P<{name}>{pattern})" for name, pattern in token_specification
-        )
+        tok_regex = "|".join(f"(?P<{name}>{pattern})"
+            for name, pattern in token_specification)
         tokens = []
         for mo in re.finditer(tok_regex, code):
             kind = mo.lastgroup
             value = mo.group()
 
             if kind == "MISMATCH":
-                raise RuntimeError(f"Caracter inesperado: {value!r}")
+                raise RuntimeError(f"Unexpected character: {value!r}")
             elif kind in ("SKIP", "NEWLINE"):
                 continue
-            else:
-                tokens.append(Token(kind, value))
+            tokens.append(Token(kind, value))
 
         return tokens
 
