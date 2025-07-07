@@ -37,7 +37,7 @@ class SyntacticAnalyzer:
     def eat(self, type_, value=None):
         if self.current.type_ != type_ or (value is not None and self.current.value != value):
             esperado = f"{type_}{' '+value if value else ''}"
-            raise ParserError(f"Se esperaba {esperado!r}, pero vino {self.current}")
+            raise ParserError(f"Waiting for {esperado!r}, but {self.current} came")
         tok = self.current
         self.advance()
         return tok
@@ -48,7 +48,7 @@ class SyntacticAnalyzer:
     def parse(self):
         self.script()
         if self.current.type_ != 'EOF':
-            raise ParserError(f"Tokens extra después de VISUALIZE: {self.current}")
+            raise ParserError(f"Tokens after VISUALIZE: {self.current}")
         return {'array': self.array, 'algorithm': self.algorithm}
 
 
@@ -80,7 +80,7 @@ class SyntacticAnalyzer:
         self.eat('RBRACKET')
         return nums
 
-    #It requires at least one NUMBER.
+    # It requires at least one NUMBER.
     # Then, as long as it sees commas, it consumes COMMA and another NUMBER.
     # It transforms each lexeme into an int and adds it to the list.
     def number_list(self):
@@ -92,19 +92,3 @@ class SyntacticAnalyzer:
             num_tok = self.eat('NUMBER')
             nums.append(int(num_tok.value))
         return nums
-
-
-if __name__ == "__main__":
-    from lexical import LexicalAnalyzer
-
-    code = """
-    ARRAY [6]
-    ALGORITHM bubble_sort
-    VISUALIZE
-    """
-    toks = LexicalAnalyzer.lex(code)
-    print("Tokens:", toks)
-
-    parser = SyntacticAnalyzer(toks)
-    result = parser.parse()
-    print("Parsed result:", result)
