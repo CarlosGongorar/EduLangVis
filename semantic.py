@@ -6,14 +6,15 @@ class SemanticAnalyzer:
     
     """Supported algotiths"""
     SUPPORTED_ALGORITHMS = {
-        'bubble_sort'
+        "bubble_sort",
+        "quick_sort"
     }
 
     
     def __init__(self, parsed):
-        # parsed = {'array': [...], 'algorithm': 'algorithm_name'}
-        self.array = parsed['array']
-        self.algorithm = parsed['algorithm']
+        # parsed = {"array": [...], "algorithm": "algorithm_name"}
+        self.array = parsed["array"]
+        self.algorithm = parsed["algorithm"]
 
     # Do checks
     def analyze(self):
@@ -40,29 +41,12 @@ class SemanticAnalyzer:
     # Check that the algorithm is supported 
     def _check_algorithm_supported(self):
         if self.algorithm not in self.SUPPORTED_ALGORITHMS:
-            raise SemanticError(f"ALGORITHM '{self.algorithm}' NOT SUPPORTED.")
+            raise SemanticError(f'ALGORITHM "{self.algorithm}" NOT SUPPORTED.')
 
     # Check algoruthm requirements
     def _check_algorithm_requirements(self):
-        # Ejemplo: merge_sort y quick_sort necesitan al menos 2 elementos
-        if self.algorithm in ('merge_sort', 'quick_sort') and len(self.array) < 2:
+        # Merge_sort y quick_sort must have at least 2 elements
+        if self.algorithm in ("merge_sort", "quick_sort") and len(self.array) < 2:
             raise SemanticError(
                 f"{self.algorithm} Must have at least 2 elements (you have {len(self.array)})."
             )
-
-# Using lexical and syntax analyzer
-if __name__ == "__main__":
-    from lexical import LexicalAnalyzer
-    from sintactic import SyntacticAnalyzer, ParserError
-
-    code = """
-    ARRAY[5, 3, 4, 2, 1 ] 
-    ALGORITHM bubble_sort 
-    VISUALIZE"""
-    try:
-        tokens = LexicalAnalyzer.lex(code)
-        parsed = SyntacticAnalyzer(tokens).parse()
-        SemanticAnalyzer(parsed).analyze()
-        print("¡Análisis semántico exitoso, listo para ejecutar/visualizar!")
-    except (RuntimeError, ParserError, SemanticError) as e:
-        print("Compilation error:", e)
