@@ -3,6 +3,8 @@
 from lexical import LexicalAnalyzer
 from sintactic import SyntacticAnalyzer, ParserError
 from semantic import SemanticAnalyzer, SemanticError
+from sort_algorithms import bubble_sort_trace
+from visualizer import SortVisualizer
 
 class Compiler:
     """This class represents the behavior of the EduLangVis compiler."""
@@ -16,22 +18,16 @@ class Compiler:
         try:
             # 1: Lexical Analysis
             self.tokens = LexicalAnalyzer.lex(code)
-            print("[LEXICAL ANALYSIS SUCCESSFUL] Tokens:")
-            for token in self.tokens:
-                print(f"  {token}")
 
             # 2: Sintax Analysis
             parser = SyntacticAnalyzer(self.tokens)
             self.parsed_result = parser.parse()
-            print("[SYNTACTIC ANALYSIS SUCCESSFUL] Parsed structure:")
-            print(f"  Array: {self.parsed_result['array']}")
-            print(f"  Algorithm: {self.parsed_result['algorithm']}")
 
             # 3: Semantic Analysis
             semantic = SemanticAnalyzer(self.parsed_result)
             semantic.analyze()
-            print("[SEMANTIC ANALYSIS SUCCESSFUL] Code is valid.")
 
+            self.execute_visualization()
             self.success = True
             return True
 
@@ -40,10 +36,23 @@ class Compiler:
             self.success = False
             return False
         
+    def execute_visualization(self):
+        array = self.parsed_result["array"]
+        algorithm = self.parsed_result["algorithm"]
+
+        if algorithm == "bubble_sort":
+            trace = bubble_sort_trace(array)
+        else:
+            print(f"No visualizer implemented for algorithm: {algorithm}")
+            return
+
+        visualizer = SortVisualizer(trace, array, algorithm)
+        visualizer.run()
+        
 if __name__ == "__main__":
     code = """
-    ARRAY[5, 2]
-    ALGORITHM quick_sort
+    ARRAY[5, 11, 2 , 4, 6, 7, 8, 9, 10, 1, 12]
+    ALGORITHM bubble_sort
     VISUALIZE
     """
     
