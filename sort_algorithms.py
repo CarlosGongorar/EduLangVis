@@ -1,5 +1,5 @@
+# Bubble Sort
 def bubble_sort_trace(array):
-    """Bubble Sort that returns a list of array states after each swap."""
     states = [array.copy()]  # Save initial state
     n = len(array)
     for i in range(n):
