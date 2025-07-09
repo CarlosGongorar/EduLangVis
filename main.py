@@ -12,7 +12,7 @@ class EduLangVisGUI:
         self.input_text.pack(padx=10, pady=10)
 
         # Compile button
-        self.compile_btn = tk.Button(root, text="Compilar y Visualizar", command=self.compile_code, bg="#4CAF50", fg="white", font=("Arial", 12, "bold"))
+        self.compile_btn = tk.Button(root, text="Compilate and Visualize", command=self.compile_code, bg="#4CAF50", fg="white", font=("Arial", 12, "bold"))
         self.compile_btn.pack(pady=5)
 
         # Output (console-like)
