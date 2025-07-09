@@ -3,7 +3,7 @@
 from lexical import LexicalAnalyzer
 from sintactic import SyntacticAnalyzer, ParserError
 from semantic import SemanticAnalyzer, SemanticError
-from sort_algorithms import bubble_sort_trace
+from sort_algorithms import bubble_sort_trace, merge_sort_trace, quick_sort_trace
 from visualizer import SortVisualizer
 
 class Compiler:
@@ -12,7 +12,10 @@ class Compiler:
     def __init__(self):
         self.tokens = []
         self.parsed_result = {}
-        self.success = False
+        self.message_log = ""
+
+    def log(self, message: str):
+        self.message_log += message + "\n"
 
     def compile(self, code: str) -> bool:
         try:
@@ -27,13 +30,10 @@ class Compiler:
             semantic = SemanticAnalyzer(self.parsed_result)
             semantic.analyze()
 
-            self.execute_visualization()
-            self.success = True
+            self.log("[Success Compilation, Ready to visualize]")
             return True
-
         except (RuntimeError, ParserError, SemanticError) as e:
-            print(f"[COMPILATION ERROR] {e}")
-            self.success = False
+            self.log(f"[COMPILATION ERROR] {e}")
             return False
         
     def execute_visualization(self):
@@ -42,24 +42,13 @@ class Compiler:
 
         if algorithm == "bubble_sort":
             trace = bubble_sort_trace(array)
+        elif algorithm == "merge_sort":
+            trace = merge_sort_trace(array)
+        elif algorithm == "quick_sort":
+            trace = quick_sort_trace(array)
         else:
             print(f"No visualizer implemented for algorithm: {algorithm}")
             return
 
         visualizer = SortVisualizer(trace, array, algorithm)
         visualizer.run()
-        
-if __name__ == "__main__":
-    code = """
-    ARRAY[5, 11, 2 , 4, 6, 7, 8, 9, 10, 1, 12]
-    ALGORITHM bubble_sort
-    VISUALIZE
-    """
-    
-    compiler = Compiler()
-    result = compiler.compile(code)
-
-    if result:
-        print("¡Compilación exitosa! Listo para ejecutar o visualizar.")
-    else:
-        print("Fallo la compilación.")

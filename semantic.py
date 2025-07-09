@@ -7,7 +7,8 @@ class SemanticAnalyzer:
     """Supported algotiths"""
     SUPPORTED_ALGORITHMS = {
         "bubble_sort",
-        "quick_sort"
+        "quick_sort",
+        "merge_sort"
     }
 
     
