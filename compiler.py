@@ -12,7 +12,10 @@ class Compiler:
     def __init__(self):
         self.tokens = []
         self.parsed_result = {}
-        self.success = False
+        self.message_log = ""
+
+    def log(self, message: str):
+        self.message_log += message + "\n"
 
     def compile(self, code: str) -> bool:
         try:
@@ -27,13 +30,10 @@ class Compiler:
             semantic = SemanticAnalyzer(self.parsed_result)
             semantic.analyze()
 
-            self.execute_visualization()
-            self.success = True
+            self.log("[Success Compilation, Ready to visualize]")
             return True
-
         except (RuntimeError, ParserError, SemanticError) as e:
-            print(f"[COMPILATION ERROR] {e}")
-            self.success = False
+            self.log(f"[COMPILATION ERROR] {e}")
             return False
         
     def execute_visualization(self):
@@ -52,18 +52,3 @@ class Compiler:
 
         visualizer = SortVisualizer(trace, array, algorithm)
         visualizer.run()
-        
-if __name__ == "__main__":
-    code = """
-    ARRAY [34, 17, 45, 3, 28, 11, 6, 50, 21, 38, 9, 41, 26, 7, 46, 31, 15, 44, 36, 5, 13, 40, 16, 2, 25, 23, 1, 10, 8, 27, 30, 49, 18, 4, 29, 43, 20, 12, 24, 35, 22, 48, 33, 39, 42, 47, 14, 32, 19, 37]
-    ALGORITHM merge_sort
-    VISUALIZE
-    """
-    
-    compiler = Compiler()
-    result = compiler.compile(code)
-
-    if result:
-        print("¡Compilación exitosa! Listo para ejecutar o visualizar.")
-    else:
-        print("Fallo la compilación.")
